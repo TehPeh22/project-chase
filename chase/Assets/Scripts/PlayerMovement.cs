@@ -40,10 +40,19 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        // horizontal = Input.GetAxisRaw("Horizontal");
+        horizontal = Input.GetAxisRaw("Horizontal");
+         
+        if (Input.GetButtonDown("Jump") && IsGrounded())
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpPower);
+        }
 
+        if (Input.GetButtonUp("Jump") && rb.linearVelocity.y > 0f)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * 0.5f);
+        }
         // Move left and right
-        rb.linearVelocity = new Vector2(Input.GetAxis("Horizontal"), rb.linearVelocity.y);
+        // rb.linearVelocity = new Vector2(Input.GetAxis("Horizontal"), rb.linearVelocity.y);
 
         if (Input.GetKeyDown(KeyCode.E) && isDashing)
         {
@@ -54,8 +63,42 @@ public class PlayerMovement : MonoBehaviour
         {
             Updraft();
         }
+
+        // Flip();
     }
 
+    private void FixedUpdate()
+    {
+        if (isDashing)
+        {
+            return;
+        }
+
+        rb.linearVelocity = new Vector2(horizontal * speed, rb.linearVelocity.y);
+    }
+
+    private bool IsGrounded()
+    {
+        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
+    }
+
+    /*
+    private void Flip()
+    {
+        //flip char based on movement direction 
+        if (isFaceRight && horizontal < 0f || !isFaceRight && horizontal > 0f)
+        {
+            isFaceRight = !isFaceRight;
+
+            //Vector3 localScale = transform.localScale;
+            //localScale.x *= -1f;
+            //transform.localScale = localScale;
+
+            //rotate player and fire point
+            transform.Rotate(0f, 180f, 0f);
+        }
+    }
+    */
     private IEnumerator Dash()
     {
         canDash = false;
