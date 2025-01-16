@@ -26,7 +26,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private TrailRenderer tr;
+    [SerializeField] private TrailRenderer dashTrail;
+    [SerializeField] private TrailRenderer updraftTrail;
 
 
     void Update()
@@ -56,7 +57,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Q) && isUpdraft)
         {
-            Updraft();
+            StartCoroutine(Updraft());
         }
 
         Flip();
@@ -90,7 +91,7 @@ public class PlayerMovement : MonoBehaviour
             transform.localScale = localScale;
 
             // Rotate player and fire point
-            transform.Rotate(0f, 180f, 0f);
+            // transform.Rotate(0f, 180f, 0f);
         }
     }
 
@@ -102,10 +103,10 @@ public class PlayerMovement : MonoBehaviour
         float originalGravity = rb.gravityScale; // Dash not affected by gravity
         rb.gravityScale = 0f;
         rb.linearVelocity = new Vector2(transform.localScale.x * dashPower, 0f);
-        tr.emitting = true;
+       dashTrail.emitting = true;
 
         yield return new WaitForSeconds(dashTime); // Wait .5sec after dash
-        tr.emitting = false;
+        dashTrail.emitting = false;
         rb.gravityScale = originalGravity; // Revert to original gravity
         isDashing = false;
 
@@ -113,15 +114,32 @@ public class PlayerMovement : MonoBehaviour
         canDash = true;
     }
 
+    /*
     private void Updraft()
     {
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, updraftPower);
         StartCoroutine(UpdraftCooldown());
     }
+    */
 
+    /*
     private IEnumerator UpdraftCooldown()
     {
         isUpdraft = false;
+        yield return new WaitForSeconds(updraftCooldown);
+        isUpdraft = true;
+    }
+    */
+
+    private IEnumerator Updraft()
+    {
+        isUpdraft = false;
+        updraftTrail.emitting = true;
+
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, updraftPower);
+        yield return new WaitForSeconds(.2f);
+
+        updraftTrail.emitting = false;
         yield return new WaitForSeconds(updraftCooldown);
         isUpdraft = true;
     }
