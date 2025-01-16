@@ -1,15 +1,12 @@
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEngine;
-using UnityEngine.XR;
 
 public class PlayerMovement : MonoBehaviour
 {
-    private float speed = 8f;
+    // Player movement vars
     private float horizontal;
-    private float jumpPower;
+    private float speed = 10f;
+    private float jumpPower = 15f;
     private bool isFaceRight = true;
 
 
@@ -17,13 +14,13 @@ public class PlayerMovement : MonoBehaviour
     private bool canDash = true;
     private bool isDashing;
     private float dashTime = .2f;
-    private float dashPower = 25f;
-    private float dashCooldown = 5f;
+    private float dashPower = 30f;
+    private float dashCooldown = 1f;
 
     // Updraft vars
     private bool isUpdraft = true;
     private float updraftPower = 20f;
-    private float updraftCooldown = 5f;
+    private float updraftCooldown = 2f;
 
 
     [SerializeField] private Rigidbody2D rb;
@@ -40,8 +37,8 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        horizontal = Input.GetAxisRaw("Horizontal");
-         
+        // Movement left, right and jump
+        horizontal = Input.GetAxisRaw("Horizontal"); // Returns -1, 1, 0 depending on direction moving 
         if (Input.GetButtonDown("Jump") && IsGrounded())
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpPower);
@@ -49,12 +46,10 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetButtonUp("Jump") && rb.linearVelocity.y > 0f)
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * 0.5f);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * 0.5f); // Allows player to jump higher when holding space
         }
-        // Move left and right
-        // rb.linearVelocity = new Vector2(Input.GetAxis("Horizontal"), rb.linearVelocity.y);
 
-        if (Input.GetKeyDown(KeyCode.E) && isDashing)
+        if (Input.GetKeyDown(KeyCode.E) && canDash)
         {
             StartCoroutine(Dash());
         }
@@ -64,7 +59,7 @@ public class PlayerMovement : MonoBehaviour
             Updraft();
         }
 
-        // Flip();
+        Flip();
     }
 
     private void FixedUpdate()
@@ -77,12 +72,12 @@ public class PlayerMovement : MonoBehaviour
         rb.linearVelocity = new Vector2(horizontal * speed, rb.linearVelocity.y);
     }
 
+    // Creates an invisible circle at the feet of player. When feet collide with ground, enable jump 
     private bool IsGrounded()
     {
-        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
+        return Physics2D.OverlapCircle(groundCheck.position, 0.3f, groundLayer);
     }
 
-    /*
     private void Flip()
     {
         //flip char based on movement direction 
@@ -90,25 +85,30 @@ public class PlayerMovement : MonoBehaviour
         {
             isFaceRight = !isFaceRight;
 
-            //Vector3 localScale = transform.localScale;
-            //localScale.x *= -1f;
-            //transform.localScale = localScale;
+            Vector3 localScale = transform.localScale;
+            localScale.x *= -1f;
+            transform.localScale = localScale;
 
-            //rotate player and fire point
+            // Rotate player and fire point
             transform.Rotate(0f, 180f, 0f);
         }
     }
-    */
+
     private IEnumerator Dash()
     {
         canDash = false;
-        isDashing = false;
-        float originalGravity = rb.gravityScale;
+        isDashing = true;
+        
+        float originalGravity = rb.gravityScale; // Dash not affected by gravity
         rb.gravityScale = 0f;
-        rb.linearVelocity = new Vector2((isFaceRight ? 1 : -1) * dashPower, 0f);
+        rb.linearVelocity = new Vector2(transform.localScale.x * dashPower, 0f);
+        tr.emitting = true;
+
+        yield return new WaitForSeconds(dashTime); // Wait .5sec after dash
         tr.emitting = false;
-        rb.gravityScale = originalGravity;
+        rb.gravityScale = originalGravity; // Revert to original gravity
         isDashing = false;
+
         yield return new WaitForSeconds(dashCooldown);
         canDash = true;
     }
