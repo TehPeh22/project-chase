@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4686781149662280651}
   - component: {fileID: 7934939617636901879}
   - component: {fileID: -5551173183389566521}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -130,6 +130,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 50
+  damage: 50
   rb: {fileID: 4686781149662280651}
 --- !u!60 &-5551173183389566521
 PolygonCollider2D:

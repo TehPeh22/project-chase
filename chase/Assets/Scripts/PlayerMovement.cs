@@ -29,6 +29,19 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private TrailRenderer dashTrail;
     [SerializeField] private TrailRenderer updraftTrail;
 
+    [SerializeField] private Transform shootingPoint;
+    private Camera mainCam;
+
+    private void Start()
+    {
+        mainCam = Camera.main;
+
+        if (mainCam == null)
+        {
+            Debug.LogError("Main cam not found");
+        }
+    }
+
 
     void Update()
     {
@@ -60,6 +73,11 @@ public class PlayerMovement : MonoBehaviour
             StartCoroutine(Updraft());
         }
 
+        if (Input.GetButtonDown("Fire1"))
+        {
+            FaceFirePoint();
+        }
+
         Flip();
     }
 
@@ -88,11 +106,33 @@ public class PlayerMovement : MonoBehaviour
 
             Vector3 localScale = transform.localScale;
             localScale.x *= -1f;
-            transform.localScale = localScale;
+            // transform.localScale = localScale;
 
             // Rotate player and fire point
-            // transform.Rotate(0f, 180f, 0f);
+            transform.Rotate(0f, 180f, 0f);
         }
+    }
+
+    void FaceFirePoint()
+    {
+        float directionToShootPoint = shootingPoint.position.x - transform.position.x; // Get direction of the shootingPoint relative to player
+
+        if (directionToShootPoint > 0 && !isFaceRight)
+        {
+            FlipChar();
+        }
+        else if (directionToShootPoint < 0 && isFaceRight)
+        {
+            FlipChar();
+        }
+    }
+
+    void FlipChar()
+    {
+        isFaceRight = !isFaceRight;
+        Vector3 localScale = transform.localScale;
+        localScale.x *= -1f;
+        transform.localScale = localScale;
     }
 
     private IEnumerator Dash()
@@ -102,8 +142,8 @@ public class PlayerMovement : MonoBehaviour
         
         float originalGravity = rb.gravityScale; // Dash not affected by gravity
         rb.gravityScale = 0f;
-        rb.linearVelocity = new Vector2(transform.localScale.x * dashPower, 0f);
-       dashTrail.emitting = true;
+        rb.linearVelocity = new Vector2((isFaceRight ? 1 : -1) * dashPower, 0f);
+        dashTrail.emitting = true;
 
         yield return new WaitForSeconds(dashTime); // Wait .5sec after dash
         dashTrail.emitting = false;
@@ -113,23 +153,6 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitForSeconds(dashCooldown);
         canDash = true;
     }
-
-    /*
-    private void Updraft()
-    {
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, updraftPower);
-        StartCoroutine(UpdraftCooldown());
-    }
-    */
-
-    /*
-    private IEnumerator UpdraftCooldown()
-    {
-        isUpdraft = false;
-        yield return new WaitForSeconds(updraftCooldown);
-        isUpdraft = true;
-    }
-    */
 
     private IEnumerator Updraft()
     {
