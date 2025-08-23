@@ -28,6 +28,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private TrailRenderer dashTrail;
     [SerializeField] private TrailRenderer updraftTrail;
+    [SerializeField] private Animator animator;
 
     [SerializeField] private Transform shootingPoint;
     private Camera mainCam;
@@ -61,6 +62,14 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetButtonUp("Jump") && rb.linearVelocity.y > 0f)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * 0.5f); // Allows player to jump higher when holding space
+        }
+
+        if (horizontal != 0)
+        {
+            animator.SetBool("isRunning", true);
+        }
+        else {
+            animator.SetBool("isRunning", false);
         }
 
         if (Input.GetKeyDown(KeyCode.E) && canDash)
