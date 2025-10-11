@@ -3,6 +3,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     public int health = 100;
+    public int damage = 1;
     // public GameObject deathEffect;
 
     // Use public to allow references from another script

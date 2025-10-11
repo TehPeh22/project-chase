@@ -30,7 +30,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private TrailRenderer updraftTrail;
     [SerializeField] private Animator animator;
 
-    [SerializeField] private Transform shootingPoint;
+    // [SerializeField] private Transform shootingPoint;
     private Camera mainCam;
 
     private void Start()
@@ -46,6 +46,12 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        // Pause when interacting with NPC
+        if (PauseController.IsGamePaused)
+        {
+            return;
+        }
+
         // Prevent player from flipping or moving when dash
         if (isDashing)
         {
@@ -82,16 +88,21 @@ public class PlayerMovement : MonoBehaviour
             StartCoroutine(Updraft());
         }
 
-        if (Input.GetButtonDown("Fire1"))
-        {
-            FaceFirePoint();
-        }
+        //if (Input.GetButtonDown("Fire1"))
+        //{
+        //    FaceFirePoint();
+        //}
 
         Flip();
     }
 
     private void FixedUpdate()
     {
+        if (PauseController.IsGamePaused)
+        {
+            return;
+        }
+
         if (isDashing)
         {
             return;
@@ -122,19 +133,19 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void FaceFirePoint()
-    {
-        float directionToShootPoint = shootingPoint.position.x - transform.position.x; // Get direction of the shootingPoint relative to player
+    //void FaceFirePoint()
+    //{
+    //    float directionToShootPoint = shootingPoint.position.x - transform.position.x; // Get direction of the shootingPoint relative to player
 
-        if (directionToShootPoint > 0 && !isFaceRight)
-        {
-            FlipChar();
-        }
-        else if (directionToShootPoint < 0 && isFaceRight)
-        {
-            FlipChar();
-        }
-    }
+    //    if (directionToShootPoint > 0 && !isFaceRight)
+    //    {
+    //        FlipChar();
+    //    }
+    //    else if (directionToShootPoint < 0 && isFaceRight)
+    //    {
+    //        FlipChar();
+    //    }
+    //}
 
     void FlipChar()
     {

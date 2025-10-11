@@ -3,7 +3,10 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - NPC
+  - Checkpoint
+  - Platform
   layers:
   - Default
   - TransparentFX
@@ -14,7 +17,7 @@ TagManager:
   - Ground
   - Player
   - Bullet
-  - 
+  - NPC
   - 
   - 
   - 
@@ -46,6 +49,12 @@ TagManager:
     locked: 0
   - name: Foreground
     uniqueID: 2779174957
+    locked: 0
+  - name: NPC
+    uniqueID: 3187133565
+    locked: 0
+  - name: Player
+    uniqueID: 3531561063
     locked: 0
   m_RenderingLayers:
   - Default

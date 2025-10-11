@@ -17,6 +17,19 @@ public class NPC : MonoBehaviour, IInteractable
 
     private int dialogueIndex;
     private bool isTyping, isDialogueActive;
+    private Transform player;
+    private Vector3 originalScale;
+    private Transform currPlatform;
+
+    void Start()
+    {
+        originalScale = transform.localScale;
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null)
+        {
+            player = playerObj.transform;
+        }
+    }
 
     //if dia box not active, can interact
     public bool CanInteract()
@@ -36,7 +49,19 @@ public class NPC : MonoBehaviour, IInteractable
         }
         else
         {
+            FacePlayer();
             StartDialogue();
+        }
+    }
+    void FacePlayer()
+    {
+        if (player == null) return;
+        if (player.position.x < transform.position.x)
+        {
+            transform.localScale = new Vector3(Mathf.Abs(originalScale.x), originalScale.y, originalScale.z);
+        } else
+        {
+            transform.localScale = new Vector3(-Mathf.Abs(originalScale.x), originalScale.y, originalScale.z);
         }
     }
 
@@ -101,4 +126,22 @@ public class NPC : MonoBehaviour, IInteractable
         dialoguePanel.SetActive(false);
         PauseController.SetPause(false);
     }
+
+    //private void OnCollisionEnter2D(Collision2D collision)
+    //{
+    //    if (collision.gameObject.CompareTag("Platform"))
+    //    {
+    //        currPlatform = collision.transform;
+    //        transform.SetParent(currPlatform);
+    //    }
+    //}
+
+    //private void OnCollisionExit2D(Collision2D collision)
+    //{
+    //    if (collision.gameObject.CompareTag("Platform"))
+    //    {
+    //        transform.SetParent(null);
+    //        currPlatform = null;
+    //    }
+    //}
 }
